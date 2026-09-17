@@ -1,0 +1,141 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Каталог";
+    var tags = ViewBag.Tags as IReadOnlyList<string> ?? new List<string>();
+    var selectedTag = ViewBag.SelectedTag as string;
+}
+
+<h1 class="page-title">Каталог товаров</h1>
+
+@* Задание 4: alert "Товар добавлен в корзину" (после AddToCart редиректит сюда же) *@
+@if (TempData["ItemAdded"] as bool? == true)
+{
+    await Html.RenderPartialAsync("_AlertPartial", ("success", "Товар добавлен в корзину."));
+}
+
+@* Средний уровень: тег-фильтр на базе Bootstrap pill-кнопок *@
+<div class="mb-4 d-flex flex-wrap gap-2 align-items-center">
+    <span class="text-muted me-2">Фильтр:</span>
+
+    <a class="btn btn-sm tag-filter @(string.IsNullOrEmpty(selectedTag) ? "btn-primary active" : "btn-outline-secondary")"
+       asp-action="Index" asp-route-tag="">
+        Все
+    </a>
+
+    @foreach (var tag in tags)
+    {
+        var isActive = tag == selectedTag;
+        <a class="btn btn-sm tag-filter @(isActive ? "btn-primary active" : "btn-outline-secondary")"
+           asp-action="Index" asp-route-tag="@tag">
+            @tag
+        </a>
+    }
+</div>
+
+@* Задание 3: сетка (Grid) и карточки товаров, адаптивность col-12 col-md-6 col-lg-4 *@
+<div class="row g-4">
+    @foreach (var product in Model)
+    {
+        @* Задание "Сложный": динамические классы и состояния UI через Razor + Bootstrap *@
+        string borderClass;
+        string? stateBadgeText;
+        string stateBadgeClass;
+        var addShadow = false;
+
+        if (!product.InStock)
+        {
+            borderClass = "border-danger";
+            stateBadgeText = "Нет в наличии";
+            stateBadgeClass = "bg-danger";
+        }
+        else if (product.IsBigDiscount)
+        {
+            borderClass = "border-success border-discount";
+            stateBadgeText = "Большая скидка";
+            stateBadgeClass = "bg-success";
+        }
+        else if (product.IsHit)
+        {
+            borderClass = "border-primary";
+            stateBadgeText = "ХИТ";
+            stateBadgeClass = "bg-warning text-dark";
+            addShadow = true;
+        }
+        else
+        {
+            borderClass = "border-0";
+            stateBadgeText = product.HasDiscount ? $"-{product.DiscountPercent}%" : null;
+            stateBadgeClass = "bg-danger";
+        }
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 product-card @borderClass @(addShadow ? "shadow-sm" : "")">
+
+                <div class="position-relative">
+                    <img src="@product.ImageUrl" class="card-img-top img-fluid" alt="@product.Name" />
+
+                    @if (stateBadgeText != null)
+                    {
+                        <span class="badge @stateBadgeClass position-absolute top-0 end-0 m-2">@stateBadgeText</span>
+                    }
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text text-muted small">@product.Description</p>
+
+                    <div class="mt-auto">
+                        @* Цена товара *@
+                        <div class="mb-2">
+                            @if (product.HasDiscount)
+                            {
+                                <span class="text-muted text-decoration-line-through me-2">@product.OldPrice!.Value.ToString("C0")</span>
+                                <span class="fs-4 fw-bold text-danger">@product.Price.ToString("C0")</span>
+                            }
+                            else
+                            {
+                                <span class="fs-4 fw-bold">@product.Price.ToString("C0")</span>
+                            }
+                        </div>
+
+                        @* Задание "Лёгкий": адаптивная таблица цен (list-group) *@
+                        <ul class="list-group list-group-flush mb-3 price-table">
+                            @if (product.HasDiscount)
+                            {
+                                <li class="list-group-item d-flex flex-column flex-md-row justify-content-md-between align-items-md-center px-0">
+                                    <span class="text-muted">Обычная цена</span>
+                                    <span class="text-muted text-decoration-line-through">@product.OldPrice!.Value.ToString("C0")</span>
+                                </li>
+                                <li class="list-group-item d-flex flex-column flex-md-row justify-content-md-between align-items-md-center px-0">
+                                    <span>Цена со скидкой</span>
+                                    <span class="fw-bold text-danger">@product.Price.ToString("C0")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="list-group-item d-flex flex-column flex-md-row justify-content-md-between align-items-md-center px-0">
+                                    <span>Цена</span>
+                                    <span class="fw-bold">@product.Price.ToString("C0")</span>
+                                </li>
+                            }
+                        </ul>
+
+                        <form asp-controller="Catalog" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="id" value="@product.Id" />
+                            <input type="hidden" name="tag" value="@selectedTag" />
+                            <button type="submit" class="btn btn-primary btn-checkout w-100"
+                                    disabled="@(!product.InStock)">
+                                @(product.InStock ? "В корзину" : "Нет в наличии")
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning mt-4">По выбранному фильтру товаров не найдено.</div>
+}

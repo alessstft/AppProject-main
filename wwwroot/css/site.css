@@ -1,0 +1,44 @@
+/* Задание 6: кастомные стили, дополняющие Bootstrap, но не ломающие его */
+
+/* 1. Центрированный заголовок страницы */
+.page-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+/* 2. Усиление отступа у карточек на мобильных */
+@media (max-width: 767.98px) {
+    .product-card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* 3. Свой цвет для кнопки "Оформить заказ" / "В корзину" */
+.btn-checkout {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.btn-checkout:hover,
+.btn-checkout:focus {
+    background-color: #5a32a3;
+    border-color: #5a32a3;
+    color: #fff;
+}
+
+/* Доп. задание "Сложный": усиленная зелёная рамка для товаров с большой скидкой */
+.border-discount {
+    border-width: 2px !important;
+}
+
+/* Картинки карточек одинаковой высоты */
+.product-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Доп. задание "Средний": лёгкая подсветка активного тега-фильтра сразу после клика (до перезагрузки) */
+.tag-filter.js-active-preview {
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.45);
+}
