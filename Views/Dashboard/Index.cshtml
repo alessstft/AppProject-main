@@ -1,0 +1,160 @@
+@model IEnumerable<DashboardCard>
+@{
+    ViewData["Title"] = "Дашборд";
+
+    // Задание 3 требует "Layout = _AppLayout" непосредственно во вьюхе.
+    // Выбор layout централизован в _ViewStart.cshtml (см. комментарий там) —
+    // это расширение (доп. задание "Средний"), и по умолчанию (без
+    // ViewData["Mode"] == "Print") результат совпадает: подставляется _AppLayout.
+}
+
+@* Задание 3, п.2: блок @{ } в начале — локальные переменные *@
+@{
+    var cardsList = Model.ToList();
+    decimal totalValue = cardsList.Sum(c => c.Value);
+    int cardCount = cardsList.Count;
+
+    // Счётчик для переноса строки каждые 3 карточки (п.5)
+    int i = 0;
+}
+
+<!-- Админ-дашборд v1.0 -->
+
+@section PageHeader {
+    @* Данные за период из контроллера *@
+    <h1>Дашборд</h1>
+    <p class="page-subtitle">
+        @cardCount показателей, сумма: @totalValue @ViewBag.Currency
+    </p>
+    <p class="report-period">Период отчёта: @ViewData["ReportPeriod"]</p>
+}
+
+@section Actions {
+    <a class="btn btn-print" href="/Dashboard/Print">Печать</a>
+}
+
+<section class="cards-grid">
+    @foreach (var card in cardsList)
+    {
+        @* Перенос строки каждые 3 карточки (п.5) *@
+        if (i > 0 && i % 3 == 0)
+        {
+            <div class="row-break"></div>
+        }
+
+        if (i % 2 == 0)
+        {
+            @* Чётные карточки выводятся напрямую в цикле (задание 4) *@
+            <div class="dashboard-card inline-card">
+                <h3>@card.Title</h3>
+                <p class="card-value">@card.Value @card.Unit</p>
+                <p class="card-trend">
+                    Тренд: @GetTrendLabel(card.Trend)
+                    @if (card.Trend == Trend.Up)
+                    {
+                        <span>↑</span>
+                    }
+                    else if (card.Trend == Trend.Down)
+                    {
+                        <span>↓</span>
+                    }
+                    else
+                    {
+                        <span>→</span>
+                    }
+                </p>
+
+                @if (card.Value < 0)
+                {
+                    <span class="badge badge-negative">Отрицательное значение</span>
+                }
+
+                <p class="card-description">@card.Description</p>
+            </div>
+        }
+        else
+        {
+            @* Нечётные карточки — через partial-представление (задание 4) *@
+            @await Html.PartialAsync("_DashboardCard", card)
+        }
+
+        i++;
+    }
+</section>
+
+<section class="cards-summary">
+    <p>Всего карточек: @cardCount</p>
+    <p>Сумма значений: @totalValue</p>
+</section>
+
+@* ==================== Доп. задание "Сложный" ====================
+   Шаблонный делегат (Func<T, IHtmlContent>) — это inline Razor-шаблон,
+   хранящийся в переменной и вызываемый как функция, без отдельного .cshtml файла.
+
+   Отличия от partial:
+   - Виден только внутри текущей страницы (или блока кода), не переиспользуется
+     другими вью, в отличие от partial, который можно вызывать откуда угодно.
+   - Не проходит через ViewEngine и не создаёт отдельный контекст рендеринга,
+     поэтому для очень мелких, одноразовых фрагментов работает быстрее partial.
+   - Не поддерживает свой @model/@functions в отдельном файле — использует
+     переменные и методы из объемлющей вьюхи (например GetTrendLabel, GetAverage).
+
+   Когда что использовать:
+   - Partial — когда разметка переиспользуется в разных вью/страницах
+     (как _DashboardCard.cshtml выше).
+   - Шаблонный делегат — для локальной, одноразовой мини-разметки внутри одной
+     страницы, где создавать отдельный файл избыточно.
+====================================================================== *@
+@{
+    Func<DashboardCard, Microsoft.AspNetCore.Html.IHtmlContent> renderCard =
+        @<div class="card delegate-card">
+            <h4>@item.Title</h4>
+            <p>@item.Value @item.Unit — @GetTrendLabel(item.Trend)</p>
+            @if (item.Value < 0)
+            {
+                <span class="badge badge-negative">Отрицательное значение</span>
+            }
+        </div>;
+
+    Func<IEnumerable<DashboardCard>, Microsoft.AspNetCore.Html.IHtmlContent> renderSummary =
+        @<div class="delegate-summary">
+            <p>Количество карточек: @item.Count()</p>
+            <p>Сумма значений: @item.Sum(c => c.Value)</p>
+            <p>Среднее значение: @GetAverage(item)</p>
+        </div>;
+}
+
+<section class="delegate-demo">
+    <h3>Демонстрация шаблонных делегатов</h3>
+    <div class="delegate-cards">
+        @foreach (var card in cardsList)
+        {
+            @renderCard(card)
+        }
+    </div>
+    @renderSummary(cardsList)
+</section>
+
+@functions {
+    // Задание 3, п.1
+    string GetTrendLabel(Trend t) => t switch
+    {
+        Trend.Up => "Рост",
+        Trend.Down => "Снижение",
+        Trend.Stable => "Стабильно",
+        _ => "Неизвестно"
+    };
+
+    // Доп. задание "Сложный", п.5
+    decimal GetAverage(IEnumerable<DashboardCard> cards)
+    {
+        var list = cards.ToList();
+        return list.Count == 0 ? 0 : list.Average(c => c.Value);
+    }
+}
+
+@section Scripts {
+    <script>
+        console.log("Дашборд загружен, карточек: @cardCount");
+    </script>
+}

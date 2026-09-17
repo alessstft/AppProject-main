@@ -1,0 +1,38 @@
+@{
+    // Доп. задание "Средний": печатная версия должна быть БЕЗ шапки, навигации
+    // и подвала. Если бы этот layout вкладывался в _Layout (Layout = "_Layout"),
+    // шапка/подвал базового layout всё равно отрисовались бы — это противоречило
+    // бы требованию "простой каркас без навигации и подвала".
+    // Поэтому _PrintLayout — самостоятельный минимальный HTML-каркас
+    // (Layout не задаётся, т.е. остаётся null), содержащий только @RenderBody().
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="print-mode">
+    @* Razor требует явно обработать (отрисовать или проигнорировать) каждую
+       секцию, определённую во вьюхе. Заголовок для печатной версии полезен,
+       поэтому мы его выводим, а кнопку "Печать" и JS-секцию — игнорируем,
+       т.к. на печатной странице они не нужны. *@
+    @if (IsSectionDefined("PageHeader"))
+    {
+        @await RenderSectionAsync("PageHeader", required: false)
+    }
+    else
+    {
+        <h1>Панель управления</h1>
+    }
+
+    @RenderBody()
+
+    @{
+        IgnoreSection("Actions");
+        IgnoreSection("Scripts");
+    }
+</body>
+</html>

@@ -1,0 +1,78 @@
+@using Microsoft.AspNetCore.Html
+@{
+    // Задание 2.2 — дочерний layout, вкладывается в базовый _Layout
+    Layout = "_Layout";
+}
+
+@* Razor не пробрасывает секции автоматически через несколько уровней layout:
+   секции, определённые в Index.cshtml, "видит" только его непосредственный
+   Layout (_AppLayout), и именно _AppLayout обязан их "обработать" —
+   вызвать RenderSection/RenderSectionAsync СИНХРОННО в рамках своего же
+   рендеринга, иначе движок бросит исключение "sections have been defined
+   but have not been rendered" сразу после выполнения _AppLayout, ещё до
+   того, как _Layout вообще получит шанс что-то отрисовать.
+
+   Просто обернуть RenderSection(...) в новый @section {...} здесь
+   НЕ РАБОТАЕТ: содержимое @section выполняется ОТЛОЖЕННО, только когда
+   его вызовет уже _Layout — то есть на следующем уровне, а к этому
+   моменту проверка "все секции _AppLayout обработаны" уже провалится.
+
+   Решение: "захватываем" содержимое секций от Index СРАЗУ (синхронно,
+   через временную подмену Output/Writer), сохраняем как обычные строки,
+   и уже эти готовые строки (без повторного RenderSection внутри)
+   передаём выше через собственные @section — так секция считается
+   обработанной сразу, а её HTML всё равно долетает до _Layout. *@
+@{
+    var pageHeaderHtml = await CaptureSectionAsync("PageHeader");
+    var actionsHtml = await CaptureSectionAsync("Actions");
+    var scriptsHtml = await CaptureSectionAsync("Scripts");
+}
+
+@section PageHeader {
+    @pageHeaderHtml
+}
+
+@section Actions {
+    @actionsHtml
+}
+
+@section Scripts {
+    @scriptsHtml
+}
+
+<div class="app-layout">
+    <div class="app-main">
+        @RenderBody()
+    </div>
+    <aside class="app-sidebar">
+        @await Component.InvokeAsync("TrendSummary")
+    </aside>
+</div>
+
+@functions {
+    // Синхронно (в рамках выполнения _AppLayout) забирает содержимое
+    // секции, объявленной во вложенной вьюхе (Index.cshtml), в виде
+    // строки — временно подменяя ViewContext.Writer, в который
+    // RenderSectionAsync обычно пишет напрямую.
+    private async Task<IHtmlContent> CaptureSectionAsync(string name)
+    {
+        if (!IsSectionDefined(name))
+        {
+            return HtmlString.Empty;
+        }
+
+        var originalWriter = ViewContext.Writer;
+        using var buffer = new StringWriter();
+        ViewContext.Writer = buffer;
+        try
+        {
+            await RenderSectionAsync(name, required: false);
+        }
+        finally
+        {
+            ViewContext.Writer = originalWriter;
+        }
+
+        return new HtmlString(buffer.ToString());
+    }
+}

@@ -1,0 +1,134 @@
+body {
+    font-family: Segoe UI, Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+    color: #222;
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1f2937;
+    color: #fff;
+    padding: 12px 24px;
+}
+
+.site-header nav a {
+    color: #cbd5e1;
+    margin-left: 16px;
+    text-decoration: none;
+}
+
+.page-header {
+    padding: 16px 24px 0;
+}
+
+.page-actions {
+    padding: 0 24px;
+}
+
+.btn {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.app-layout {
+    display: flex;
+    gap: 24px;
+    padding: 16px 24px;
+}
+
+.app-main {
+    flex: 3;
+}
+
+.app-sidebar {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    height: fit-content;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.row-break {
+    flex-basis: 100%;
+    height: 0;
+}
+
+.dashboard-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    width: 260px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.card-value {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.value-class {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: normal;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.badge-negative {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.cards-summary, .delegate-demo {
+    margin: 24px;
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.delegate-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.delegate-card {
+    background: #f8fafc;
+    border: 1px dashed #94a3b8;
+    border-radius: 6px;
+    padding: 10px;
+    width: 220px;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 16px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+body.print-mode {
+    padding: 24px;
+    background: #fff;
+}

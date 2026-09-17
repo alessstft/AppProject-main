@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Админ-панель</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">Админ-панель</div>
+        <nav>
+            <a href="/Dashboard/Index">Дашборд</a>
+            <a href="#">Настройки</a>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        @* Задание 2.1: если секция PageHeader определена во вьюхе — выводим её,
+           иначе показываем дефолтный заголовок "Панель управления" *@
+        @if (IsSectionDefined("PageHeader"))
+        {
+            @await RenderSectionAsync("PageHeader", required: false)
+        }
+        else
+        {
+            <h1>Панель управления</h1>
+        }
+    </div>
+
+    @* Доп. задание "Средний": секция с действиями страницы (например, "Печать").
+       На страницах, где секция не определена (например, гипотетический
+       Details.cshtml), IsSectionDefined вернёт false и блок просто не выведется —
+       required: false позволяет секции отсутствовать без ошибки. *@
+    @if (IsSectionDefined("Actions"))
+    {
+        <div class="page-actions">
+            @await RenderSectionAsync("Actions", required: false)
+        </div>
+    }
+
+    <main class="content">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        &copy; @DateTime.Now.Year Админ-панель
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

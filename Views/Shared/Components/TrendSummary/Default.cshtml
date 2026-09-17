@@ -1,0 +1,22 @@
+@model IEnumerable<TrendSummaryItem>
+
+<div class="trend-summary">
+    <h4>Сводка по трендам</h4>
+
+    @if (!Model.Any())
+    {
+        <p>Нет данных</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var item in Model)
+            {
+                <li>
+                    <strong>@item.TrendName</strong>:
+                    @item.Count карт., сумма @item.Sum
+                </li>
+            }
+        </ul>
+    }
+</div>

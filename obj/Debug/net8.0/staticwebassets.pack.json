@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Proj\\DashboardAdmin (1)\\DashboardAdmin\\wwwroot\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.DashboardAdmin.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.DashboardAdmin.props",
+      "PackagePath": "build\\DashboardAdmin.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.DashboardAdmin.props",
+      "PackagePath": "buildMultiTargeting\\DashboardAdmin.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.DashboardAdmin.props",
+      "PackagePath": "buildTransitive\\DashboardAdmin.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
