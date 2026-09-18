@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#e9ecef"/>
+  <rect x="1" y="1" width="598" height="398" fill="none" stroke="#ced4da" stroke-width="2"/>
+  <g fill="#adb5bd">
+    <circle cx="220" cy="160" r="40"/>
+    <polygon points="120,300 250,180 320,240 420,140 500,300"/>
+  </g>
+  <text x="300" y="360" font-family="Arial, sans-serif" font-size="22" fill="#6c757d" text-anchor="middle">
+    Изображение товара
+  </text>
+</svg>

@@ -1,12 +1,7 @@
-using DashboardAdmin.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
+// Добавляем MVC (контроллеры + представления). TempData (cookie-based) подключается автоматически.
 builder.Services.AddControllersWithViews();
-
-// Репозиторий карточек дашборда хранит данные в статическом списке в памяти,
-// поэтому регистрируем его как Singleton (задание 1, п.3)
-builder.Services.AddSingleton<IDashboardRepository, InMemoryDashboardRepository>();
 
 var app = builder.Build();
 
@@ -17,13 +12,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Middleware, которое отдаёт статические файлы из wwwroot (css, js, img, lib/bootstrap)
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthorization();
 
+// По умолчанию открываем каталог товаров
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+    pattern: "{controller=Catalog}/{action=Index}/{id?}");
 
 app.Run();

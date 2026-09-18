@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "3imiJS21Dyc=",
+  "dgSpecHash": "6wRtexruxkU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\aless\\OneDrive\\Рабочий стол\\4курс\\DashBoard\\DashboardAdmin.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\aless\\OneDrive\\Рабочий стол\\4курс\\ProductShowcase_Practical3\\productShowcase\\ProductShowcase.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\aless\\.nuget\\packages\\buildbundlerminifier\\3.2.449\\buildbundlerminifier.3.2.449.nupkg.sha512"
+  ],
   "logs": []
 }

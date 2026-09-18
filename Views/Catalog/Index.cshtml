@@ -1,0 +1,82 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Каталог";
+    var tags = ViewBag.Tags as IReadOnlyList<string> ?? new List<string>();
+    var selectedTag = ViewBag.SelectedTag as string;
+    var hasMore = ViewBag.HasMore as bool? ?? false;
+}
+
+<h1 class="page-title">Каталог товаров</h1>
+
+@* Практическая 3, Задание 2.1: поле живого поиска (обрабатывает search.js) *@
+<input type="text" id="searchInput" class="form-control mb-4"
+       placeholder="Поиск товаров..." autocomplete="off" />
+
+@* Средний уровень (практическая 2): тег-фильтр на базе Bootstrap pill-кнопок *@
+<div class="mb-4 d-flex flex-wrap gap-2 align-items-center">
+    <span class="text-muted me-2">Фильтр:</span>
+
+    <a class="btn btn-sm tag-filter @(string.IsNullOrEmpty(selectedTag) ? "btn-primary active" : "btn-outline-secondary")"
+       asp-action="Index" asp-route-tag="">
+        Все
+    </a>
+
+    @foreach (var tag in tags)
+    {
+        var isActive = tag == selectedTag;
+        <a class="btn btn-sm tag-filter @(isActive ? "btn-primary active" : "btn-outline-secondary")"
+           asp-action="Index" asp-route-tag="@tag">
+            @tag
+        </a>
+    }
+</div>
+
+@* Задание 3 (практическая 2): сетка (Grid), адаптивность col-12 col-md-6 col-lg-4.
+   Практическая 3, Задание 2.1: id="catalogGrid" — сюда search.js и infinite.js
+   вставляют/дописывают карточки. *@
+<div class="row g-4" id="catalogGrid">
+    @foreach (var product in Model)
+    {
+        <partial name="_ProductCard" model="product" />
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning mt-4">По выбранному фильтру товаров не найдено.</div>
+}
+
+@* Доп. задание "Средний": сентинель для бесконечной подгрузки (infinite.js).
+   Если товаров на первой странице меньше PageSize, показывать нечего —
+   но пустой div ничему не мешает, если наблюдатель не найдёт новых элементов. *@
+@if (hasMore)
+{
+    <div id="sentinel" style="height: 20px;"></div>
+    <div id="loadMoreSpinner" class="text-center py-3 d-none">
+        <div class="spinner-border spinner-border-sm text-primary"></div>
+    </div>
+}
+
+@* Доп. задание "Сложный": модалка с деталями товара + отзывами (Promise.all) *@
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Информация о товаре</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/search.js" asp-append-version="true"></script>
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+    <script src="~/js/infinite.js" asp-append-version="true"></script>
+    <script src="~/js/product-modal.js" asp-append-version="true"></script>
+}

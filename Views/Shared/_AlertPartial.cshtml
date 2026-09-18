@@ -1,0 +1,7 @@
+@* Переиспользуемый Bootstrap alert. Модель — кортеж (тип алерта, текст сообщения). *@
+@model (string Type, string Message)
+
+<div class="alert alert-@Model.Type alert-dismissible fade show auto-dismiss-alert" role="alert">
+    @Model.Message
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+</div>

@@ -3,49 +3,86 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Админ-панель</title>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <title>@ViewData["Title"] — Витрина товаров</title>
+
+    <!-- Задание 1, п.3: подключение стилей через <environment> + static files -->
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
 </head>
 <body>
-    <header class="site-header">
-        <div class="logo">Админ-панель</div>
-        <nav>
-            <a href="/Dashboard/Index">Дашборд</a>
-            <a href="#">Настройки</a>
+
+    <!-- Задание 2: Navbar через Bootstrap -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="Catalog" asp-action="Index">
+                    🛍️ ShopCase
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                        aria-expanded="false" aria-label="Открыть меню">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Catalog" asp-action="Index">Каталог</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                                Корзина
+                                <span class="badge bg-danger" id="cartBadge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Админ</a>
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-outline-light">Войти</a>
+                </div>
+            </div>
         </nav>
     </header>
 
-    <div class="page-header">
-        @* Задание 2.1: если секция PageHeader определена во вьюхе — выводим её,
-           иначе показываем дефолтный заголовок "Панель управления" *@
-        @if (IsSectionDefined("PageHeader"))
-        {
-            @await RenderSectionAsync("PageHeader", required: false)
-        }
-        else
-        {
-            <h1>Панель управления</h1>
-        }
-    </div>
-
-    @* Доп. задание "Средний": секция с действиями страницы (например, "Печать").
-       На страницах, где секция не определена (например, гипотетический
-       Details.cshtml), IsSectionDefined вернёт false и блок просто не выведется —
-       required: false позволяет секции отсутствовать без ошибки. *@
-    @if (IsSectionDefined("Actions"))
-    {
-        <div class="page-actions">
-            @await RenderSectionAsync("Actions", required: false)
-        </div>
-    }
-
-    <main class="content">
+    <main class="container mb-5">
         @RenderBody()
     </main>
 
-    <footer class="site-footer">
-        &copy; @DateTime.Now.Year Админ-панель
+    @* Доп. задание "Лёгкий" (практическая 3): toast-уведомление вместо смены текста кнопки *@
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+        <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="cartToastText">
+                    Товар добавлен
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-muted py-4 border-top">
+        <div class="container">
+            <small>&copy; @DateTime.Now.Year ShopCase — учебный проект (CSS + Bootstrap в ASP.NET Core)</small>
+        </div>
     </footer>
+
+    <!-- Bootstrap JS (bundle включает Popper — нужен для модалок/дропдаунов) -->
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

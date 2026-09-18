@@ -1,0 +1,10 @@
+@model IEnumerable<Product>
+@* Практическая 3, Задание 1.1/Средний: HTML-фрагмент без layout —
+   используется и для живого поиска (Search), и для подгрузки страниц (LoadMore).
+   Пустой список намеренно не оборачивается в alert — "Ничего не найдено"
+   показывает сам JS (search.js) по пустой строке ответа; LoadMore по той же
+   пустой строке понимает, что товары закончились. *@
+@foreach (var product in Model)
+{
+    <partial name="_ProductCard" model="product" />
+}
